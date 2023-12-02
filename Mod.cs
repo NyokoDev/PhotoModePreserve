@@ -1,15 +1,18 @@
-﻿namespace DynamicResolutionExtended
+﻿namespace PhotoModePreserve
 {
 
     using Colossal.Logging;
     using Game;
     using Game.Modding;
-    using DynamicResolutionExtended.Systems;
+    using PhotoModePreserve.Systems;
+    using Game.Tools;
 
     public sealed class Mod : IMod
     {
 
-        // - Start of mod properties.
+        /// <summary>
+        /// Mod properties.
+        /// </summary>
         public const string ModName = "Photo Mode Preserve";                    
         public static Mod Instance { get; private set; }
         internal ILog Log { get; private set; }
@@ -21,26 +24,16 @@
             Log.effectivenessLevel = Level.Debug;
 
             Log.Info("loading");
-            Log.Info("=======PHOTO MODE PRESERVE=======");
-            Log.Info("=======     Initialized   =======");
-            Log.Info("=======                   =======");
+            
         }
-
-        //End of mod properties.
-
         /// <summary>
         /// Called by the game when the game world is created. 
         /// </summary>
         /// <param name="updateSystem">Game update system.</param>
         public void OnCreateWorld(UpdateSystem updateSystem)
         {
-            Log.Info("[DYNRESEXT] starting OnCreateWorld");
-
-   
- 
-
+            updateSystem.UpdateAt<ModeSystem>(SystemUpdatePhase.GameSimulation);
         }
-
         /// <summary>
         /// Called by the game when the mod is disposed of.
         /// </summary>

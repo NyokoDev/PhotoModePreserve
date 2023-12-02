@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 using Game.Net;
 
-namespace DynamicResolutionExtended
+namespace PhotoModePreserve
 {
     static class Initializer
     {
