@@ -22,7 +22,7 @@
             Instance = this;
             Log = LogManager.GetLogger(ModName);
             Log.Info("setting logging level to Debug");
-            Log.effectivenessLevel = Level.Debug;
+            Log.effectivenessLevel = Level.All;
 
             Log.Info("loading");
             

@@ -11,21 +11,11 @@ using Log = NyokoLogging.LoggerNyoko;
 
 namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
 {
-   
-    public class ColorAdjustmentsManager : SystemBase
+
+    public class ColorAdjustmentsManager
     {
-        ColorAdjustmentsInstance manager; 
-        ColorAdjustments properties; 
-
-        // Constructor
-        public ColorAdjustmentsManager()
-        {
-            manager = World.GetOrCreateSystemManaged<ColorAdjustmentsInstance>(); // Initialize the manager field in the constructor
-            properties = manager.GetColorAdjustments(); // Initialize the properties field in the constructor
-            Log.LogStringToFile("Set properties as field.");
-                                                        
-        }
-
+        ColorAdjustmentsInstance instance = new ColorAdjustmentsInstance();
+        public ColorAdjustments properties;
 
         public FloatParameter PostExposure { get; set; }
         public ClampedFloatParameter Contrast { get; set; }
@@ -83,10 +73,7 @@ namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
             Console.WriteLine($"Values serialized to {filePath}");
         }
 
-        protected override void OnUpdate()
-        {
-         
-        }
+       
     }
     
 }

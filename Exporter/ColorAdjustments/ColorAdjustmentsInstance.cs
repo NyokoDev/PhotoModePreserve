@@ -1,68 +1,69 @@
 ﻿using Game.Rendering;
+using JetBrains.Annotations;
+using PhotoModePreserve;
+using PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.CodeDom;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Entities;
 using UnityEngine.Rendering.HighDefinition;
-using Log = NyokoLogging.LoggerNyoko;
 
-
-
-namespace PhotoModePreserve.Exporter
+internal class ColorAdjustmentsInstance : SystemBase
 {
-    internal class ColorAdjustmentsInstance : SystemBase
+    public ColorAdjustments adjustments;
+    ColorAdjustmentsManager manager;
+
+
+
+    public void GetColorAdjustments()
     {
-        private ColorAdjustments adjustments;
+        LightingSystem lightingSystemInstance = World.GetOrCreateSystemManaged<LightingSystem>();
 
-        public ColorAdjustments GetColorAdjustments()
+        if (lightingSystemInstance == null)
         {
-            // Create an instance of the LightingSystem class
-            LightingSystem lightingSystemInstance = World.GetOrCreateSystemManaged<LightingSystem>();
-
-            // Check if lightingSystemInstance is null
-            if (lightingSystemInstance == null)
-            {
-                Log.LogStringToFile("LightingSystem instance is null.");
-                
-            }
-
-            // Get the type of LightingSystem
-            Type type = lightingSystemInstance.GetType();
-
-            // Get the field information for the instance field "m_ColorAdjustments"
-            FieldInfo fieldInfo = type.GetField("m_ColorAdjustments", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (fieldInfo != null)
-            {
-                // Access the field value using the lightingSystemInstance
-                adjustments = (ColorAdjustments)fieldInfo.GetValue(lightingSystemInstance);
-                if (adjustments != null)
-                {
-                    Log.LogStringToFile("FIELD FOUND: " + adjustments.ToString());
-                    return adjustments;
-                }
-                else
-                {
-                    Log.LogStringToFile("Field 'm_ColorAdjustments' found but value is null.");
-                    return null; // or handle the situation according to your logic
-                }
-            }
-            else
-            {
-                Log.LogStringToFile("CRITICAL: Field 'm_ColorAdjustments' NOT FOUND.");
-                return null; // or handle the situation according to your logic
-            }
-        
-    
-}
-
-
-protected override void OnUpdate()
-        {
-      
+            LogAndAbort("LightingSystem instance is null.");
+            
         }
+
+        ColorAdjustments GetInstance()
+        {
+            return adjustments;
+        }
+
+
+
+        Type type = lightingSystemInstance.GetType();
+        FieldInfo fieldInfo = type.GetField("m_ColorAdjustments", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        if (fieldInfo != null)
+        {
+            adjustments = (ColorAdjustments)fieldInfo.GetValue(lightingSystemInstance);
+            if (adjustments != null)
+            {
+                LogInfo("FIELD FOUND: " + adjustments.ToString());
+                manager.properties = adjustments;
+            }
+        }
+
+        LogAndAbort("Field 'm_ColorAdjustments' not found or value is null.");
+      
+    }
+
+    private void LogInfo(string message)
+    {
+        Mod.Instance.Log.Info(message);
+        UnityEngine.Debug.Log(message);
+    }
+
+    private void LogAndAbort(string message)
+    {
+        string exceptionMessage = "Operation aborted: " + message;
+        LogInfo(exceptionMessage);
+        throw new InvalidOperationException(exceptionMessage);
+    }
+
+    protected override void OnUpdate()
+    {
+        
     }
 }

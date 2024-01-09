@@ -21,7 +21,9 @@ namespace PhotoModePreserve.Systems
     public partial class PreservePhotoModeSystem : SystemBase
     {
 
-        InitializationProcedure procedure = new InitializationProcedure();
+        InitializationProcedure procedure;
+        
+
         protected override void OnUpdate()
         {
             

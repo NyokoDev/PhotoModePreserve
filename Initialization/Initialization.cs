@@ -11,22 +11,18 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace PhotoModePreserve.Initialization
 {
-    public class InitializationProcedure : SystemBase
+    public class InitializationProcedure
     {
-        
+
         public void Write()
         {
-            ColorAdjustmentsManager properties = World.GetOrCreateSystemManaged<ColorAdjustmentsManager>();
+            ColorAdjustmentsManager properties = new ColorAdjustmentsManager();
             properties.SetProperties();
             properties.SerializeToXML();
+            Mod.Instance.Log.Debug("Ran SetProperties() and SerializetoXML at InitializationProcedure class.");
         }
 
-        protected override void OnUpdate()
-        {
-            ColorAdjustmentsManager properties = World.GetOrCreateSystemManaged<ColorAdjustmentsManager>();
-            properties.SetProperties();
-            properties.SerializeToXML();
-        }
+    
     }
 
        
