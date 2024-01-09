@@ -1,7 +1,9 @@
-﻿using Game.Prefabs.Climate;
+﻿using Colossal.UI;
+using Game.Prefabs.Climate;
 using Game.Rendering;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using Unity.Entities;
 using UnityEngine;
@@ -14,26 +16,22 @@ namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
 
     public class ColorAdjustmentsManager
     {
-        ColorAdjustmentsInstance instance = new ColorAdjustmentsInstance();
-        public ColorAdjustments properties;
 
-        public FloatParameter PostExposure { get; set; }
-        public ClampedFloatParameter Contrast { get; set; }
-        public ColorParameter ColorFilter { get; set; }
-        public ClampedFloatParameter HueShift { get; set; }
-        public ClampedFloatParameter Saturation { get; set; }
 
-        public void SetProperties()
-        {
+ 
+            public FloatParameter LocalPostExposure { get; set; }
+            public ClampedFloatParameter LocalContrast { get; set; }
+            public ColorParameter LocalColorFilter { get; set; }
+            public ClampedFloatParameter LocalHueShift { get; set; }
+            public ClampedFloatParameter LocalSaturation { get; set; }
+        
 
-            PostExposure = properties.postExposure;
-            Contrast = properties.contrast;
-            ColorFilter = properties.colorFilter;
-            HueShift = properties.hueShift;
-            Saturation = properties.saturation;
-        }
 
-     
+
+
+
+
+
         // Method to serialize values to XML
         public void SerializeToXML()
         {
@@ -46,27 +44,27 @@ namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
             xmlDoc.AppendChild(root);
 
             XmlElement postExposureElem = xmlDoc.CreateElement("PostExposure");
-            postExposureElem.InnerText = PostExposure.ToString();
+            postExposureElem.InnerText = LocalPostExposure.ToString();
             root.AppendChild(postExposureElem);
 
             XmlElement contrastElem = xmlDoc.CreateElement("Contrast");
-            contrastElem.InnerText = Contrast.ToString();
+            contrastElem.InnerText = LocalContrast.ToString();
             root.AppendChild(contrastElem);
 
             XmlElement colorFilterElem = xmlDoc.CreateElement("ColorFilter");
             XmlAttribute colorAttr = xmlDoc.CreateAttribute("value");
-            colorAttr.Value = ColorUtility.ToHtmlStringRGBA(ColorFilter.value); // Access the color value from ColorParameter
+            colorAttr.Value = ColorUtility.ToHtmlStringRGBA(LocalColorFilter.value); // Access the color value from ColorParameter
             colorFilterElem.Attributes.Append(colorAttr);
             root.AppendChild(colorFilterElem);
 
 
 
             XmlElement hueShiftElem = xmlDoc.CreateElement("HueShift");
-            hueShiftElem.InnerText = HueShift.ToString();
+            hueShiftElem.InnerText = LocalHueShift.ToString();
             root.AppendChild(hueShiftElem);
 
             XmlElement saturationElem = xmlDoc.CreateElement("Saturation");
-            saturationElem.InnerText = Saturation.ToString();
+            saturationElem.InnerText = LocalSaturation.ToString();
             root.AppendChild(saturationElem);
 
             xmlDoc.Save(filePath);

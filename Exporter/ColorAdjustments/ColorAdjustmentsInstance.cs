@@ -1,53 +1,101 @@
-﻿using Game.Rendering;
+﻿using Game.Prefabs;
+using Game.Rendering;
 using JetBrains.Annotations;
 using PhotoModePreserve;
+using PhotoModePreserve.Exporter;
 using PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance;
 using System;
 using System.CodeDom;
 using System.Reflection;
 using Unity.Entities;
+using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 
 internal class ColorAdjustmentsInstance : SystemBase
 {
-    public ColorAdjustments adjustments;
-    ColorAdjustmentsManager manager;
 
 
+    ColorAdjustmentsManager manager = new ColorAdjustmentsManager();
 
-    public void GetColorAdjustments()
+    public void ExtractAndSetLocalProperties()
     {
-        LightingSystem lightingSystemInstance = World.GetOrCreateSystemManaged<LightingSystem>();
+        LightingSystem lightingSystem = World.GetOrCreateSystemManaged<LightingSystem>();
 
-        if (lightingSystemInstance == null)
+        if (lightingSystem == null)
         {
-            LogAndAbort("LightingSystem instance is null.");
-            
+            UnityEngine.Debug.Log("LightingSystem not found or not initialized.");
+            return;
         }
 
-        ColorAdjustments GetInstance()
+        FieldInfo colorAdjustmentsField = typeof(LightingSystem).GetField("m_ColorAdjustments", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        if (colorAdjustmentsField == null)
         {
-            return adjustments;
+            UnityEngine.Debug.Log("m_ColorAdjustments field not found in LightingSystem.");
+            return;
         }
 
+        ColorAdjustments colorAdjustmentsInstance = (ColorAdjustments)colorAdjustmentsField.GetValue(lightingSystem);
 
-
-        Type type = lightingSystemInstance.GetType();
-        FieldInfo fieldInfo = type.GetField("m_ColorAdjustments", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        if (fieldInfo != null)
+        if (colorAdjustmentsInstance == null)
         {
-            adjustments = (ColorAdjustments)fieldInfo.GetValue(lightingSystemInstance);
-            if (adjustments != null)
+            UnityEngine.Debug.Log("ColorAdjustments instance not found or not initialized in LightingSystem.");
+            return;
+        }
+
+        PropertyInfo[] properties = typeof(ColorAdjustments).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        
+
+        foreach (PropertyInfo property in properties)
+        {
+            string propertyName = property.Name;
+
+            // Filter out unwanted properties
+            if (propertyName == "hideFlags" || propertyName == "displayName" || propertyName == "parameters" || propertyName == "name")
             {
-                LogInfo("FIELD FOUND: " + adjustments.ToString());
-                manager.properties = adjustments;
+                UnityEngine.Debug.Log($"Property {propertyName} skipped.");
+                continue;
+            }
+
+            // Get the value of each property from the ColorAdjustments instance
+            object propertyValue = property.GetValue(colorAdjustmentsInstance);
+
+            // Log property values for debugging
+            UnityEngine.Debug.Log($"Property: {propertyName}, Value: {propertyValue}");
+
+            // Assign values to local properties based on extracted values
+            switch (propertyName)
+            {
+                case "postExposure":
+                    manager.LocalPostExposure = (FloatParameter)propertyValue;
+                    UnityEngine.Debug.Log($"Assigned LocalPostExposure: {propertyValue}");
+                    break;
+                case "contrast":
+                    manager.LocalContrast = (ClampedFloatParameter)propertyValue;
+                    UnityEngine.Debug.Log($"Assigned LocalContrast: {propertyValue}");
+                    break;
+                case "colorFilter":
+                    manager.LocalColorFilter = (ColorParameter)propertyValue;
+                    UnityEngine.Debug.Log($"Assigned LocalColorFilter: {propertyValue}");
+                    break;
+                case "hueShift":
+                    manager.LocalHueShift = (ClampedFloatParameter)propertyValue;
+                    UnityEngine.Debug.Log($"Assigned LocalHueShift: {propertyValue}");
+                    break;
+                case "saturation":
+                    manager.LocalSaturation = (ClampedFloatParameter)propertyValue;
+                    UnityEngine.Debug.Log($"Assigned LocalSaturation: {propertyValue}");
+                    break;
+                // Add cases for other properties if needed
+                default:
+                    UnityEngine.Debug.Log($"Property {propertyName} not handled.");
+                    break;
             }
         }
-
-        LogAndAbort("Field 'm_ColorAdjustments' not found or value is null.");
-      
     }
+    
+
 
     private void LogInfo(string message)
     {
@@ -64,6 +112,7 @@ internal class ColorAdjustmentsInstance : SystemBase
 
     protected override void OnUpdate()
     {
-        
+        ExtractAndSetLocalProperties();
+        manager.SerializeToXML();
     }
 }

@@ -17,7 +17,7 @@ namespace PhotoModePreserve.Initialization
         public void Write()
         {
             ColorAdjustmentsManager properties = new ColorAdjustmentsManager();
-            properties.SetProperties();
+
             properties.SerializeToXML();
             Mod.Instance.Log.Debug("Ran SetProperties() and SerializetoXML at InitializationProcedure class.");
         }

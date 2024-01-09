@@ -34,7 +34,7 @@
         public void OnCreateWorld(UpdateSystem updateSystem)
         {
             
-            updateSystem.UpdateAt<PreservePhotoModeSystem>(SystemUpdatePhase.PreSimulation);
+            updateSystem.UpdateAt<ColorAdjustmentsInstance>(SystemUpdatePhase.PreSimulation);
            
         }
         /// <summary>
