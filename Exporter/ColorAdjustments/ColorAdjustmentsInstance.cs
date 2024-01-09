@@ -5,18 +5,29 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Entities;
 using UnityEngine.Rendering.HighDefinition;
+using Log = NyokoLogging.LoggerNyoko;
+
+
 
 namespace PhotoModePreserve.Exporter
 {
-    internal class ColorAdjustmentsInstance
+    internal class ColorAdjustmentsInstance : SystemBase
     {
         private ColorAdjustments adjustments;
 
         public ColorAdjustments GetColorAdjustments()
         {
             // Create an instance of the LightingSystem class
-            LightingSystem lightingSystemInstance = new LightingSystem();
+            LightingSystem lightingSystemInstance = World.GetOrCreateSystemManaged<LightingSystem>();
+
+            // Check if lightingSystemInstance is null
+            if (lightingSystemInstance == null)
+            {
+                Log.LogStringToFile("LightingSystem instance is null.");
+                
+            }
 
             // Get the type of LightingSystem
             Type type = lightingSystemInstance.GetType();
@@ -28,14 +39,30 @@ namespace PhotoModePreserve.Exporter
             {
                 // Access the field value using the lightingSystemInstance
                 adjustments = (ColorAdjustments)fieldInfo.GetValue(lightingSystemInstance);
-                UnityEngine.Debug.Log("FIELD FOUND: " + adjustments);
+                if (adjustments != null)
+                {
+                    Log.LogStringToFile("FIELD FOUND: " + adjustments.ToString());
+                    return adjustments;
+                }
+                else
+                {
+                    Log.LogStringToFile("Field 'm_ColorAdjustments' found but value is null.");
+                    return null; // or handle the situation according to your logic
+                }
             }
             else
             {
-                UnityEngine.Debug.Log("CRITICAL: NOT FOUND");
+                Log.LogStringToFile("CRITICAL: Field 'm_ColorAdjustments' NOT FOUND.");
+                return null; // or handle the situation according to your logic
             }
+        
+    
+}
 
-            return adjustments;
+
+protected override void OnUpdate()
+        {
+      
         }
     }
 }

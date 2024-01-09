@@ -3,14 +3,16 @@ using Game.Rendering;
 using System;
 using System.IO;
 using System.Xml;
+using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
+using Log = NyokoLogging.LoggerNyoko;
 
 namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
 {
    
-    public class ColorAdjustmentsManager
+    public class ColorAdjustmentsManager : SystemBase
     {
         ColorAdjustmentsInstance manager; 
         ColorAdjustments properties; 
@@ -18,9 +20,9 @@ namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
         // Constructor
         public ColorAdjustmentsManager()
         {
-            manager = new ColorAdjustmentsInstance(); // Initialize the manager field in the constructor
+            manager = World.GetOrCreateSystemManaged<ColorAdjustmentsInstance>(); // Initialize the manager field in the constructor
             properties = manager.GetColorAdjustments(); // Initialize the properties field in the constructor
-            UnityEngine.Debug.Log("Set properties as field.");
+            Log.LogStringToFile("Set properties as field.");
                                                         
         }
 
@@ -81,6 +83,10 @@ namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
             Console.WriteLine($"Values serialized to {filePath}");
         }
 
+        protected override void OnUpdate()
+        {
+         
+        }
     }
     
 }

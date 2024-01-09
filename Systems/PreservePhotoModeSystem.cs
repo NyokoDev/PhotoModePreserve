@@ -24,6 +24,7 @@ namespace PhotoModePreserve.Systems
         InitializationProcedure procedure = new InitializationProcedure();
         protected override void OnUpdate()
         {
+            
             procedure.Write();
         }
 

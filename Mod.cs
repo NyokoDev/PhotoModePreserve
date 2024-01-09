@@ -6,6 +6,7 @@
     using Game.Modding;
     using PhotoModePreserve.Systems;
     using Game.Tools;
+    using PhotoModePreserve.Exporter;
 
     public sealed class Mod : IMod
     {
@@ -32,8 +33,9 @@
         /// <param name="updateSystem">Game update system.</param>
         public void OnCreateWorld(UpdateSystem updateSystem)
         {
-  
-            updateSystem.UpdateAt<PreservePhotoModeSystem>(SystemUpdatePhase.GameSimulation);
+            
+            updateSystem.UpdateAt<PreservePhotoModeSystem>(SystemUpdatePhase.PreSimulation);
+           
         }
         /// <summary>
         /// Called by the game when the mod is disposed of.
