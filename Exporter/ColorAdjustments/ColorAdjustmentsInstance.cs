@@ -90,7 +90,10 @@ internal class ColorAdjustmentsInstance : SystemBase
                 // Add cases for other properties if needed
                 default:
                     UnityEngine.Debug.Log($"Property {propertyName} not handled.");
+                    manager.completed = true;
                     break;
+
+                    
             }
         }
     }

@@ -24,9 +24,9 @@ namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
             public ColorParameter LocalColorFilter { get; set; }
             public ClampedFloatParameter LocalHueShift { get; set; }
             public ClampedFloatParameter LocalSaturation { get; set; }
-        
 
 
+        public bool completed;
 
 
 
@@ -34,44 +34,51 @@ namespace PhotoModePreserve.Exporter.ColorAdjustmentsEnsurance
 
         // Method to serialize values to XML
         public void SerializeToXML()
+
+            
         {
-            string assemblyDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string filePath = Path.Combine(assemblyDirectory, "ColorAdjustmentsProperties.xml");
+            if (completed)
+            {
+                string assemblyDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string filePath = Path.Combine(assemblyDirectory, "ColorAdjustmentsProperties.xml");
 
-            XmlDocument xmlDoc = new XmlDocument();
+                XmlDocument xmlDoc = new XmlDocument();
 
-            XmlElement root = xmlDoc.CreateElement("ColorAdjustmentsProperties");
-            xmlDoc.AppendChild(root);
+                XmlElement root = xmlDoc.CreateElement("ColorAdjustmentsProperties");
+                xmlDoc.AppendChild(root);
 
-            XmlElement postExposureElem = xmlDoc.CreateElement("PostExposure");
-            postExposureElem.InnerText = LocalPostExposure.ToString();
-            root.AppendChild(postExposureElem);
+                XmlElement postExposureElem = xmlDoc.CreateElement("PostExposure");
+                postExposureElem.InnerText = LocalPostExposure.ToString();
+                root.AppendChild(postExposureElem);
 
-            XmlElement contrastElem = xmlDoc.CreateElement("Contrast");
-            contrastElem.InnerText = LocalContrast.ToString();
-            root.AppendChild(contrastElem);
+                XmlElement contrastElem = xmlDoc.CreateElement("Contrast");
+                contrastElem.InnerText = LocalContrast.ToString();
+                root.AppendChild(contrastElem);
 
-            XmlElement colorFilterElem = xmlDoc.CreateElement("ColorFilter");
-            XmlAttribute colorAttr = xmlDoc.CreateAttribute("value");
-            colorAttr.Value = ColorUtility.ToHtmlStringRGBA(LocalColorFilter.value); // Access the color value from ColorParameter
-            colorFilterElem.Attributes.Append(colorAttr);
-            root.AppendChild(colorFilterElem);
+                XmlElement colorFilterElem = xmlDoc.CreateElement("ColorFilter");
+                XmlAttribute colorAttr = xmlDoc.CreateAttribute("value");
+                colorAttr.Value = ColorUtility.ToHtmlStringRGBA(LocalColorFilter.value); // Access the color value from ColorParameter
+                colorFilterElem.Attributes.Append(colorAttr);
+                root.AppendChild(colorFilterElem);
 
 
 
-            XmlElement hueShiftElem = xmlDoc.CreateElement("HueShift");
-            hueShiftElem.InnerText = LocalHueShift.ToString();
-            root.AppendChild(hueShiftElem);
+                XmlElement hueShiftElem = xmlDoc.CreateElement("HueShift");
+                hueShiftElem.InnerText = LocalHueShift.ToString();
+                root.AppendChild(hueShiftElem);
 
-            XmlElement saturationElem = xmlDoc.CreateElement("Saturation");
-            saturationElem.InnerText = LocalSaturation.ToString();
-            root.AppendChild(saturationElem);
+                XmlElement saturationElem = xmlDoc.CreateElement("Saturation");
+                saturationElem.InnerText = LocalSaturation.ToString();
+                root.AppendChild(saturationElem);
 
-            xmlDoc.Save(filePath);
-            Console.WriteLine($"Values serialized to {filePath}");
+                xmlDoc.Save(filePath);
+                Console.WriteLine($"Values serialized to {filePath}");
+            }
+            else
+                UnityEngine.Debug.Log("Completed is not true");
         }
 
-       
+
     }
     
 }
