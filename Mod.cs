@@ -32,7 +32,8 @@
         /// <param name="updateSystem">Game update system.</param>
         public void OnCreateWorld(UpdateSystem updateSystem)
         {
-            updateSystem.UpdateAt<ModeSystem>(SystemUpdatePhase.GameSimulation);
+  
+            updateSystem.UpdateAt<PreservePhotoModeSystem>(SystemUpdatePhase.GameSimulation);
         }
         /// <summary>
         /// Called by the game when the mod is disposed of.
