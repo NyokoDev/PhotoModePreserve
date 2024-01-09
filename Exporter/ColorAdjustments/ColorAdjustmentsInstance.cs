@@ -44,64 +44,74 @@ internal class ColorAdjustmentsInstance : SystemBase
             return;
         }
 
-        PropertyInfo[] properties = typeof(ColorAdjustments).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        
+        MemberInfo[] members = typeof(ColorAdjustments).GetMembers(BindingFlags.Public | BindingFlags.Instance);
 
-        foreach (PropertyInfo property in properties)
+        foreach (MemberInfo member in members)
         {
-            string propertyName = property.Name;
+            string memberName = member.Name;
 
-            // Filter out unwanted properties
-            if (propertyName == "hideFlags" || propertyName == "displayName" || propertyName == "parameters" || propertyName == "name")
+            // Check if the member is a field
+            if (member.MemberType == MemberTypes.Field)
             {
-                UnityEngine.Debug.Log($"Property {propertyName} skipped.");
-                continue;
+                FieldInfo field = (FieldInfo)member;
+
+                // Get the value of each field from the ColorAdjustments instance
+                object fieldValue = field.GetValue(colorAdjustmentsInstance);
+
+                // Log field values for debugging
+                UnityEngine.Debug.Log($"Field: {memberName}, Value: {fieldValue}");
+
+                // Assign values to local properties based on extracted values
+                switch (memberName)
+                {
+                    case "postExposure":
+                        if (fieldValue is FloatParameter postExposureValue)
+                        {
+                            manager.LocalPostExposure = postExposureValue;
+                            UnityEngine.Debug.Log($"Assigned LocalPostExposure: {fieldValue}");
+                        }
+                        break;
+                    case "contrast":
+                        if (fieldValue is ClampedFloatParameter contrastValue)
+                        {
+                            manager.LocalContrast = contrastValue;
+                            UnityEngine.Debug.Log($"Assigned LocalContrast: {fieldValue}");
+                        }
+                        break;
+                    case "colorFilter":
+                        if (fieldValue is ColorParameter colorFilterValue)
+                        {
+                            manager.LocalColorFilter = colorFilterValue;
+                            UnityEngine.Debug.Log($"Assigned LocalColorFilter: {fieldValue}");
+                        }
+                        break;
+                    case "hueShift":
+                        if (fieldValue is ClampedFloatParameter hueShiftValue)
+                        {
+                            manager.LocalHueShift = hueShiftValue;
+                            UnityEngine.Debug.Log($"Assigned LocalHueShift: {fieldValue}");
+                        }
+                        break;
+                    case "saturation":
+                        if (fieldValue is ClampedFloatParameter saturationValue)
+                        {
+                            manager.LocalSaturation = saturationValue;
+                            UnityEngine.Debug.Log($"Assigned LocalSaturation: {fieldValue}");
+                        }
+                        break;
+                    // Add cases for other members if needed
+                    default:
+                        UnityEngine.Debug.Log($"Member {memberName} not handled.");
+                        break;
+                }
             }
-
-            // Get the value of each property from the ColorAdjustments instance
-            object propertyValue = property.GetValue(colorAdjustmentsInstance);
-
-            // Log property values for debugging
-            UnityEngine.Debug.Log($"Property: {propertyName}, Value: {propertyValue}");
-
-            // Assign values to local properties based on extracted values
-            switch (propertyName)
-            {
-                case "postExposure":
-                    manager.LocalPostExposure = (FloatParameter)propertyValue;
-                    UnityEngine.Debug.Log($"Assigned LocalPostExposure: {propertyValue}");
-                    break;
-                case "contrast":
-                    manager.LocalContrast = (ClampedFloatParameter)propertyValue;
-                    UnityEngine.Debug.Log($"Assigned LocalContrast: {propertyValue}");
-                    break;
-                case "colorFilter":
-                    manager.LocalColorFilter = (ColorParameter)propertyValue;
-                    UnityEngine.Debug.Log($"Assigned LocalColorFilter: {propertyValue}");
-                    break;
-                case "hueShift":
-                    manager.LocalHueShift = (ClampedFloatParameter)propertyValue;
-                    UnityEngine.Debug.Log($"Assigned LocalHueShift: {propertyValue}");
-                    break;
-                case "saturation":
-                    manager.LocalSaturation = (ClampedFloatParameter)propertyValue;
-                    UnityEngine.Debug.Log($"Assigned LocalSaturation: {propertyValue}");
-                    break;
-                // Add cases for other properties if needed
-                default:
-                    UnityEngine.Debug.Log($"Property {propertyName} not handled.");
-                    
-                    break;
-
-                    
-            }
-            manager.completed = true;
+            
         }
+
+        manager.completed = true;
     }
-    
 
-
-    private void LogInfo(string message)
+        private void LogInfo(string message)
     {
         Mod.Instance.Log.Info(message);
         UnityEngine.Debug.Log(message);
