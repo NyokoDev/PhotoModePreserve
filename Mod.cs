@@ -6,7 +6,7 @@
     using Game.Modding;
     using PhotoModePreserve.Systems;
     using Game.Tools;
-    using PhotoModePreserve.Exporter;
+    using UnityEngine;
 
     public sealed class Mod : IMod
     {
@@ -16,13 +16,15 @@
         /// </summary>
         public const string ModName = "Photo Mode Preserve";                    
         public static Mod Instance { get; private set; }
+
+        public static bool Compatible;
         internal ILog Log { get; private set; }
         public void OnLoad()
         {
             Instance = this;
             Log = LogManager.GetLogger(ModName);
             Log.Info("setting logging level to Debug");
-            Log.effectivenessLevel = Level.All;
+            Log.effectivenessLevel = Level.Debug;
 
             Log.Info("loading");
             
@@ -33,9 +35,10 @@
         /// <param name="updateSystem">Game update system.</param>
         public void OnCreateWorld(UpdateSystem updateSystem)
         {
+            updateSystem.UpdateAt<ModeSystem>(SystemUpdatePhase.GameSimulation);
             
-            updateSystem.UpdateAt<ColorAdjustmentsInstance>(SystemUpdatePhase.PreSimulation);
-           
+
+
         }
         /// <summary>
         /// Called by the game when the mod is disposed of.

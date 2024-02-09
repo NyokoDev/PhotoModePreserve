@@ -13,21 +13,14 @@ using System.Collections.Generic;
 using Game;
 using Game.Rendering.CinematicCamera;
 using UnityEngine;
-using Game.Prefabs.Climate;
-using PhotoModePreserve.Initialization;
 
 namespace PhotoModePreserve.Systems
-{ 
-    public partial class PreservePhotoModeSystem : SystemBase
+{
+    public partial class ModeSystem : SystemBase
     {
-
-        InitializationProcedure procedure;
-        
-
         protected override void OnUpdate()
         {
-            
-            procedure.Write();
+            //Sample system 
         }
 
        
